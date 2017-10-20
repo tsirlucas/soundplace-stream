@@ -5,27 +5,36 @@ const request = require('request-stream');
 
 const app = express();
 
-const getStreamURL = (url, callback) => {
-    exec(`youtube-dl ${url} -f bestaudio -g`, (error, stdout, stderr) => {
-        callback(stdout);
+
+const getStreamURLPromise = (url) => {
+    return new Promise((resolve, reject) => {
+        exec(`youtube-dl ${url} -f bestaudio -g`, (err, stdout, stderr) =>
+            err ? reject(err) : resolve(stdout));
     });
+};
+
+const requestStreamPromise = (url) => {
+    return new Promise((resolve, reject) => {
+        request.get(url, {}, (err, readStream) => {
+            err ? reject(err) : resolve(readStream);
+        })
+    })
 };
 
 app.get('/', (req, res) => res.send('/getVideoStream/:videoID'));
 
-app.get('/getAudioStream/:videoID', ({ params }, res) => {
-    getStreamURL(params.videoID, (streamUrl) => {
-        request.get(streamUrl, {}, (err, readStream) => {
-            readStream.on('error', () => {
-                res.status(404).end();
-            });
-            readStream.on('end', () => {
-                res.end();
-            });
+app.get('/getAudioStream/:videoID', async ({ params }, res) => {
+    const streamURL = await getStreamURLPromise(params.videoID);
+    const readStream = await requestStreamPromise(streamURL);
 
-            readStream.pipe(res, { end: false });
-        });
+    readStream.on('error', () => {
+        res.status(404).end();
     });
+    readStream.on('end', () => {
+        res.end();
+    });
+
+    readStream.pipe(res, { end: false });
 });
 
 app.listen(3000, () => console.log('Server listening on port 3000!'));
