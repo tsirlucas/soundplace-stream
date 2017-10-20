@@ -21,9 +21,7 @@ const requestStreamPromise = (url) => {
     })
 };
 
-app.get('/', (req, res) => res.send('/getVideoStream/:videoID'));
-
-app.get('/getAudioStream/:videoID', async ({ params }, res) => {
+const getAudioStream = async ({ params }, res) => {
     const streamURL = await getStreamURLPromise(params.videoID);
     const readStream = await requestStreamPromise(streamURL);
 
@@ -35,6 +33,10 @@ app.get('/getAudioStream/:videoID', async ({ params }, res) => {
     });
 
     readStream.pipe(res, { end: false });
-});
+};
+
+app.get('/', (req, res) => res.send('/getVideoStream/:videoID'));
+
+app.get('/getAudioStream/:videoID', getAudioStream);
 
 app.listen(3000, () => console.log('Server listening on port 3000!'));
