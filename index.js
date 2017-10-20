@@ -27,6 +27,7 @@ const getAudioStream = async ({ params }, res) => {
     readStream.on('error', () => {
         res.status(404).end();
     });
+
     readStream.on('end', () => {
         res.end();
     });
