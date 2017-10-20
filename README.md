@@ -1,4 +1,4 @@
-Nothing to say. I made this project in a few hours knowing nothing about Node and now I just want to sleep so Will put anything in here plus some important settings intel.
+Nothing to say. I made this project in a few hours knowing nothing about Node and now I just want to sleep so I wll put anything in here plus some important settings intel.
 
 I hate callbacks
 
