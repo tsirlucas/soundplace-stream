@@ -1,10 +1,9 @@
 const express = require('express');
-const exec = require('child_process').exec;
-const fs = require('fs');
 const request = require('request-stream');
 
-const app = express();
+const { exec } = require('child_process');
 
+const app = express();
 
 const getStreamURLPromise = (url) => {
     return new Promise((resolve, reject) => {
