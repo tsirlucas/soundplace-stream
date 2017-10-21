@@ -1,5 +1,6 @@
 const express = require('express');
 const request = require('request-stream');
+const queryString = require('query-string');
 
 const { exec } = require('child_process');
 
@@ -20,19 +21,55 @@ const requestStreamPromise = (url) => {
     })
 };
 
-const getAudioStream = async ({ params }, res) => {
+const createPartialHead = (range, fileSize, { mime }) => {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1]
+        ? parseInt(parts[1], 10)
+        : fileSize - 1;
+    const chunksize = (end - start) + 1;
+
+    return {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': mime,
+        'client-protocol': 'quic',
+        'x-content-type-options': 'nosniff'
+    };
+};
+
+const createFullHead = (fileSize, { mime }) => ({
+    'Content-Length': fileSize,
+    'Content-Type': mime,
+});
+
+const getQueryStringParams = (streamURL) => {
+    const paramsString = streamURL.split('.com/')[1];
+    return queryString.parse(paramsString);
+};
+
+const getAudioStream = async ({ params, headers }, res) => {
     const streamURL = await getStreamURLPromise(params.videoID);
+
+    const qsParams = getQueryStringParams(streamURL);
+
+    const fileSize = qsParams.clen;
+    const range = headers.range;
+
     const readStream = await requestStreamPromise(streamURL);
 
-    readStream.on('error', () => {
-        res.status(404).end();
-    });
+    if (range) {
+        const head = createPartialHead(range, fileSize, qsParams);
 
-    readStream.on('end', () => {
-        res.end();
-    });
+        res.writeHead(206, head);
+        readStream.pipe(res);
+    } else {
+        const head = createFullHead(fileSize, qsParams);
 
-    readStream.pipe(res, { end: false });
+        res.writeHead(200, head);
+        readStream.pipe(res)
+    }
 };
 
 app.get('/', (req, res) => res.send('/getVideoStream/:videoID'));
