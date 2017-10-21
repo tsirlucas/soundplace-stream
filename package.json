@@ -7,8 +7,7 @@
     "node": "8.7.0"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "heroku-prebuild": "sudo add-apt-repository ppa:nilarimogard/webupd8 && sudo apt-get update && sudo apt-get install youtube-dl"
+    "start": "node src/index.js"
   },
   "author": "",
   "license": "ISC",
