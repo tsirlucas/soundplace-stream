@@ -6,9 +6,9 @@ const request = require('request-stream');
 const { checkCache, createStreamFromCache, cacheStream } = require('./cache');
 const { getQueryStringParams } = require('./util');
 
-const getStreamURLPromise = (url) => {
+const getStreamURLPromise = (videoSearch) => {
     return new Promise((resolve, reject) => {
-        exec(`youtube-dl ${url} -f bestaudio -g`, (err, stdout, stderr) =>
+        exec(`youtube-dl "ytsearch1:${videoSearch}" -f bestaudio -g`, (err, stdout, stderr) =>
             err ? reject(err) : resolve(stdout.replace(/\n$/, '')));
     });
 };
@@ -21,8 +21,8 @@ const requestStreamPromise = (url) => {
     })
 };
 
-const requestStream = async (videoID, streamURL) => {
-    streamURL = streamURL || await getStreamURLPromise(videoID);
+const requestStream = async (videoSearch, streamURL) => {
+    streamURL = streamURL || await getStreamURLPromise(videoSearch);
     const { clen } = getQueryStringParams(streamURL);
 
     const readStream = await requestStreamPromise(streamURL);
@@ -30,14 +30,14 @@ const requestStream = async (videoID, streamURL) => {
     return { readStream, size: clen };
 };
 
-const createReadStream = async (videoID, streamURL) => {
-    const cacheURL = `./cache/${videoID}.webm`;
+const createReadStream = async (videoSearch, streamURL) => {
+    const cacheURL = `./cache/${videoSearch}.webm`;
 
     if (checkCache(cacheURL)) {
         return createStreamFromCache(cacheURL);
     }
 
-    const readStream = await requestStream(videoID, streamURL);
+    const readStream = await requestStream(videoSearch, streamURL);
 
     cacheStream(cacheURL, readStream);
 
