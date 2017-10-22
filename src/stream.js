@@ -9,7 +9,7 @@ const { getQueryStringParams } = require('./util');
 const getStreamURLPromise = (url) => {
     return new Promise((resolve, reject) => {
         exec(`youtube-dl ${url} -f bestaudio -g`, (err, stdout, stderr) =>
-            err ? reject(err) : resolve(stdout));
+            err ? reject(err) : resolve(stdout.replace(/\n$/, '')));
     });
 };
 
