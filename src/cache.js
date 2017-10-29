@@ -1,23 +1,22 @@
-const fs = require('fs');
+const NodeCache = require('node-cache');
+const { requestStreamURL } = require('./stream');
 
-const checkCacheDir = () => {
-    if (!fs.existsSync('./cache/')) {
-        fs.mkdirSync('./cache/');
-    }
+const myCache = new NodeCache();
+
+myCache.on('expired', (key) => requestStreamURL(key));
+
+const getStreamURLFromCache = (key) =>
+    new Promise((resolve, reject) =>
+        myCache.get(key, (err, value) => {
+            if (err || value === undefined) {
+                resolve(null);
+            } else {
+                resolve(value);
+            }
+        }));
+
+const cacheStreamURL = (videoId, streamURL) => {
+    myCache.set(videoId, streamURL, 43200);
 };
 
-const checkCache = (cacheURL) => fs.existsSync(cacheURL);
-
-const createStreamFromCache = (cacheURL) => {
-    const readStream = fs.createReadStream(cacheURL);
-    const { size } = fs.statSync(cacheURL);
-
-    return { readStream, size };
-};
-
-const cacheStream = (cacheURL, { readStream }) => {
-    const writeStream = fs.createWriteStream(cacheURL);
-    readStream.pipe(writeStream);
-};
-
-module.exports = { checkCacheDir, checkCache, createStreamFromCache, cacheStream };
+module.exports = { cacheStreamURL, getStreamURLFromCache };

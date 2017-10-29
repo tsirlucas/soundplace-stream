@@ -1,15 +1,12 @@
 const express = require('express');
 
-const { checkCacheDir } = require('./cache');
 const { createReadStream, getStreamURLPromise } = require('./stream');
 const { createFullHead } = require('./util');
 const searchVideoReq = require('./youtube-api');
 
 const app = express();
 
-checkCacheDir();
-
-const searchVideo = async ({ params, headers }, res) => {
+const searchVideo = async ({ params }, res) => {
     const videoId = await searchVideoReq(params.videoSearch);
 
     res.setHeader('Content-Type', 'application/json');
@@ -27,7 +24,6 @@ const getAudioStream = async ({ params, headers }, res) => {
         const streamURL = await getStreamURLPromise(params.videoId);
 
         res.redirect(streamURL);
-        await createReadStream(params.videoId, streamURL);
     }
 };
 

@@ -3,13 +3,26 @@ const { exec } = require('child_process');
 
 const request = require('request-stream');
 
-const { checkCache, createStreamFromCache, cacheStream } = require('./cache');
+const { getStreamURLFromCache, cacheStreamURL } = require('./cache');
 const { getQueryStringParams } = require('./util');
 
-const getStreamURLPromise = (videoId) => {
+const requestStreamURL = (videoId) =>
+    new Promise((resolve, reject) => {
+        exec(`youtube-dl https://www.youtube.com/watch?v=${videoId} -f bestaudio -g --force-ipv4`, (err, stdout, stderr) => {
+            if (err) return reject(err);
+
+            const resURL = stdout.replace(/\n$/, '');
+            cacheStreamURL(videoId, resURL);
+            resolve(resURL)
+        });
+    });
+
+const getStreamURLPromise = async (videoId) => {
+    const streamURL = await getStreamURLFromCache(videoId);
+
     return new Promise((resolve, reject) => {
-        exec(`youtube-dl https://www.youtube.com/watch?v=${videoId} -f bestaudio -g`, (err, stdout, stderr) =>
-            err ? reject(err) : resolve(stdout.replace(/\n$/, '')));
+        if (streamURL) return resolve(streamURL);
+        requestStreamURL(videoId).then(resolve).catch(reject)
     });
 };
 
@@ -21,8 +34,8 @@ const requestStreamPromise = (url) => {
     })
 };
 
-const requestStream = async (videoId, streamURL) => {
-    streamURL = streamURL || await getStreamURLPromise(videoId);
+const createReadStream = async (videoId) => {
+    const streamURL = await getStreamURLPromise(videoId);
     const { clen } = getQueryStringParams(streamURL);
 
     const readStream = await requestStreamPromise(streamURL);
@@ -30,18 +43,4 @@ const requestStream = async (videoId, streamURL) => {
     return { readStream, size: clen };
 };
 
-const createReadStream = async (videoId, streamURL) => {
-    const cacheURL = `./cache/${videoId}.webm`;
-
-    if (checkCache(cacheURL)) {
-        return createStreamFromCache(cacheURL);
-    }
-
-    const readStream = await requestStream(videoId, streamURL);
-
-    cacheStream(cacheURL, readStream);
-
-    return readStream;
-};
-
-module.exports = { createReadStream, getStreamURLPromise };
+module.exports = { createReadStream, getStreamURLPromise, requestStreamURL };
