@@ -33,7 +33,7 @@ const searchAudioStream = async ({ params, headers }, res) => {
     await getAudioStream({ params: { videoId }, headers }, res);
 };
 
-app.get('/', (req, res) => res.send('/getVideoStream/:videoSearch'));
+app.get('/', (req, res) => res.send('See https://github.com/tsirlucas/youtube-cacheable-audio-stream'));
 
 app.get('/searchAudioStream/:videoSearch', searchAudioStream);
 
@@ -42,3 +42,13 @@ app.get('/searchVideo/:videoSearch', searchVideo);
 app.get('/getAudioStream/:videoId', getAudioStream);
 
 app.listen(process.env.PORT || 3000, () => console.log('Server listening on port 3000!'));
+
+if (proccess.env.HEROKU_ENV) {
+    // prevent heroku app from sleeping
+
+    const http = require("http");
+    
+    setInterval(function () {
+        http.get("https://youtube-cacheable-audio-stream.herokuapp.com/");
+    }, 300000); // every 5 minutes (300000)
+}
