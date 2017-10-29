@@ -46,9 +46,9 @@ app.listen(process.env.PORT || 3000, () => console.log('Server listening on port
 if (proccess.env.HEROKU_ENV) {
     // prevent heroku app from sleeping
 
-    const http = require("http");
+    const http = require('http');
     
     setInterval(function () {
-        http.get("https://youtube-cacheable-audio-stream.herokuapp.com/");
+        http.get('https://youtube-cacheable-audio-stream.herokuapp.com/');
     }, 300000); // every 5 minutes (300000)
 }
