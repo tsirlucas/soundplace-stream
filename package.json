@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
+    "googleapis": "^22.2.0",
     "query-string": "^5.0.0",
     "request-stream": "^1.2.2"
   }
