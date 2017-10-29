@@ -1,6 +1,4 @@
 const express = require('express');
-const https = require('https');
-const http = require('http');
 
 const { checkCacheDir } = require('./cache');
 const { createReadStream, getStreamURLPromise } = require('./stream');
@@ -30,7 +28,4 @@ app.get('/', (req, res) => res.send('/getVideoStream/:videoSearch'));
 
 app.get('/getAudioStream/:videoSearch', getAudioStream);
 
-// Create an HTTP service.
-http.createServer(app).listen(80);
-// Create an HTTPS service identical to the HTTP service.
-https.createServer(options, app).listen(443);
+app.listen(process.env.PORT || 3000, () => console.log('Server listening on port 3000!'));
