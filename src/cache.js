@@ -19,4 +19,7 @@ const cacheStreamURL = (videoId, streamURL) => {
     myCache.set(videoId, streamURL, 43200);
 };
 
-module.exports = { cacheStreamURL, getStreamURLFromCache };
+// requestStreamURL redirects to cacheStreamURL
+const preCache = requestStreamURL;
+
+module.exports = { cacheStreamURL, getStreamURLFromCache, preCache};

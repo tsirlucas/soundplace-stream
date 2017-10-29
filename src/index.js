@@ -1,6 +1,7 @@
 const express = require('express');
 
 const { createReadStream, getStreamURLPromise } = require('./stream');
+const { preCache } = require('./cache');
 const { createFullHead } = require('./util');
 const searchVideoReq = require('./youtube-api');
 
@@ -11,6 +12,8 @@ const searchVideo = async ({ params }, res) => {
 
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ videoId }));
+
+    preCache(videoId);
 };
 
 const getAudioStream = async ({ params, headers }, res) => {
