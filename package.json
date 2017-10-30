@@ -7,7 +7,8 @@
     "node": "8.7.0"
   },
   "scripts": {
-    "start": "webpack && node build/bundle.js & webpack --watch"
+    "prestart": "webpack",
+    "start": "node build/bundle.js & webpack --watch"
   },
   "author": "",
   "license": "ISC",
