@@ -16,10 +16,13 @@ handler.on('error', function (err) {
 });
 
 handler.on('push', function (event) {
+    console.log('Push detected, starting hot-deploy');
     exec('git fetch && git checkout origin/master -- ./package.json', (err, stdout, stderr) => {
+        console.log(stdout);
         exec('yarn', (err, stdout, stderr) => {
+            console.log(stdout);
             exec('git pull', (err, stdout, stderr) => {
-                console.log('cb rullz im sleepy');
+                console.log(stdout);
             });
         });
     });
