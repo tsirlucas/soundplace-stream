@@ -2,7 +2,7 @@ const http = require('http');
 const createHandler = require('github-webhook-handler');
 const { exec } = require('child_process');
 
-const handler = createHandler({ path: '/webhook', secret: '' });
+const handler = createHandler({ path: '/webhook', secret: 'ycas' });
 
 http.createServer(function (req, res) {
     handler(req, res, function (err) {
