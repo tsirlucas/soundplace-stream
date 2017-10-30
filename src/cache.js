@@ -1,13 +1,11 @@
-const NodeCache = require('node-cache');
 const { requestStreamURL } = require('./stream');
+const Cache = require('./cache.singleton');
 
-const myCache = new NodeCache();
-
-myCache.on('expired', (key) => requestStreamURL(key));
+Cache.on('expire', requestStreamURL);
 
 const getStreamURLFromCache = (key) =>
     new Promise((resolve, reject) =>
-        myCache.get(key, (err, value) => {
+        Cache.get(key, (err, value) => {
             if (err || value === undefined) {
                 resolve(null);
             } else {
@@ -16,10 +14,10 @@ const getStreamURLFromCache = (key) =>
         }));
 
 const cacheStreamURL = (videoId, streamURL) => {
-    myCache.set(videoId, streamURL, 43200);
+    Cache.set(videoId, streamURL, 43200);
 };
 
 // requestStreamURL redirects to cacheStreamURL
 const preCache = requestStreamURL;
 
-module.exports = { cacheStreamURL, getStreamURLFromCache, preCache};
+module.exports = { cacheStreamURL, getStreamURLFromCache, preCache };
