@@ -3,7 +3,7 @@ const fs = require('fs');
 
 let app = require('./index');
 
-const httpServer = app.listen(3000, (error) => {
+const httpServer = app.listen(process.env.PORT || 3000, (error) => {
     if (error) {
         console.error(error);
     } else {
