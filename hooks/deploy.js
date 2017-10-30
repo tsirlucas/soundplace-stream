@@ -4,26 +4,32 @@ const { exec } = require('child_process');
 
 const handler = createHandler({ path: '/webhook', secret: 'ycas' });
 
-http.createServer(function (req, res) {
-    handler(req, res, function (err) {
+const server = http.createServer((req, res) =>
+    handler(req, res, () => {
         res.statusCode = 404;
         res.end('no such location')
-    })
-}).listen(7777);
+    }));
 
-handler.on('error', function (err) {
-    console.error('Error:', err.message)
-});
+handler.on('error', (err) => console.error('Error:', err.message));
 
-handler.on('push', function (event) {
+const updatePackageJSON = () =>
+    new Promise((resolve, reject) =>
+        exec('git fetch && git checkout origin/master -- ./package.json', (err, stdout, stderr) =>
+            err ? reject(err) : resolve(stdout)));
+
+const updateDependencies = () =>
+    new Promise((resolve, reject) =>
+        exec('yarn', (err, stdout, stderr) => err ? reject(err) : resolve(stdout)));
+
+const updateProject = () =>
+    new Promise((resolve, reject) =>
+        exec('git pull', (err, stdout, stderr) => err ? reject(err) : resolve(stdout)));
+
+handler.on('push', async () => {
     console.log('Push detected, starting hot-deploy');
-    exec('git fetch && git checkout origin/master -- ./package.json', (err, stdout, stderr) => {
-        console.log(stdout);
-        exec('yarn', (err, stdout, stderr) => {
-            console.log(stdout);
-            exec('git pull', (err, stdout, stderr) => {
-                console.log(stdout);
-            });
-        });
-    });
+    console.log(await updatePackageJSON());
+    console.log(await updateDependencies());
+    console.log(await updateProject());
 });
+
+server.listen(7777);
