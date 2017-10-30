@@ -14,7 +14,7 @@ const getStreamURLFromCache = (key) =>
         }));
 
 const cacheStreamURL = (videoId, streamURL) => {
-    Cache.set(videoId, streamURL, 43200);
+    Cache.set(videoId, streamURL, 14400);
 };
 
 // requestStreamURL redirects to cacheStreamURL
