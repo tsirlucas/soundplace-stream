@@ -36,7 +36,7 @@ const searchAudioStream = async ({ params, headers }, res) => {
     await getAudioStream({ params: { videoId }, headers }, res);
 };
 
-app.get('/', (req, res) => res.send('See https://github.com/tsirlucas/youtube-cacheable-audio-stream'));
+app.get('/', (req, res) => res.send('See https://github.com/tsirlucas/youtube-cacheable-audio-stream for more information'));
 
 app.get('/searchAudioStream/:videoSearch', searchAudioStream);
 
