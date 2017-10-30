@@ -8,7 +8,9 @@
   },
   "scripts": {
     "prestart": "webpack",
-    "start": "node build/bundle.js & webpack --watch"
+    "start": "node build/bundle.js",
+    "preprod": "webpack",
+    "prod": "node build/bundle.js & webpack --watch"
   },
   "author": "",
   "license": "ISC",
