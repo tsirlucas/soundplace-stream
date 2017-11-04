@@ -1,8 +1,9 @@
 const queryString = require('query-string');
 
-const createFullHead = (size) => ({
+const createFullHead = (size, data) => ({
     'Content-Length': size,
-    'Content-Type': 'audio/webm',
+	'Content-Type': 'audio/webm',
+	'data': data || null 
 });
 
 const getQueryStringParams = (streamURL) => {

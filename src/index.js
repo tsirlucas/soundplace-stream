@@ -8,32 +8,32 @@ const searchVideoReq = require('./youtube-api');
 const app = express();
 
 const searchVideo = async ({ params }, res) => {
-    const videoId = await searchVideoReq(params.videoSearch);
+	const videoId = await searchVideoReq(params.videoSearch);
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ videoId }));
+	res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify({ videoId }));
 
-    preCache(videoId);
+	preCache(videoId);
 };
 
 const getAudioStream = async ({ params, headers }, res) => {
-    if (headers.save) {
-        const { readStream, size } = await createReadStream(params.videoId);
-        const head = createFullHead(size);
+	if (headers.save) {
+		const { readStream, size } = await createReadStream(params.videoId);
+		const head = createFullHead(size, headers.data);
 
-        res.writeHead(200, head);
-        readStream.pipe(res)
-    } else {
-        const streamURL = await getStreamURLPromise(params.videoId);
+		res.writeHead(200, head);
+		readStream.pipe(res)
+	} else {
+		const streamURL = await getStreamURLPromise(params.videoId);
 
-        res.redirect(streamURL);
-    }
+		res.redirect(streamURL);
+	}
 };
 
 const searchAudioStream = async ({ params, headers }, res) => {
-    const videoId = await searchVideoReq(params.videoSearch);
+	const videoId = await searchVideoReq(params.videoSearch);
 
-    await getAudioStream({ params: { videoId }, headers }, res);
+	await getAudioStream({ params: { videoId }, headers }, res);
 };
 
 app.get('/', (req, res) => res.send('See https://github.com/tsirlucas/youtube-cacheable-audio-stream'));
