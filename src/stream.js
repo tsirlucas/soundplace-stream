@@ -8,7 +8,7 @@ const { getQueryStringParams } = require('./util');
 
 const requestStreamURL = (videoId) =>
     new Promise((resolve, reject) => {
-        exec(`youtube-dl https://www.youtube.com/watch?v=${videoId} -f bestaudio -g --force-ipv4`, (err, stdout, stderr) => {
+        exec(`youtube-dl https://www.youtube.com/watch?v=${videoId} -f bestaudio -g --force-ipv4 -x --audio-format vorbis`, (err, stdout, stderr) => {
             if (err) return reject(err);
 
             const resURL = stdout.replace(/\n$/, '');

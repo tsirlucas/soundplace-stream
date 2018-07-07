@@ -3,23 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": ".src/index.js",
-  "engines": {
-    "node": "8.7.0"
-  },
   "scripts": {
-    "prestart": "webpack",
-    "start": "node build/bundle.js & webpack --watch"
+    "start": "node src/main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
-    "github-webhook-handler": "^0.6.0",
-    "glob": "^7.1.2",
     "googleapis": "^22.2.0",
     "node-cache": "^4.1.1",
     "query-string": "^5.0.0",
-    "request-stream": "^1.2.2",
-    "webpack": "^3.8.1"
+    "request-stream": "^1.2.2"
   }
 }
