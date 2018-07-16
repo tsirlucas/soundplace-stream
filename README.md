@@ -1,4 +1,4 @@
-# Youtube Cacheable Audio Stream
+# soundplace-stream
 
 A Web API that returns a cacheable audio stream for a given Youtube video ID.
 
