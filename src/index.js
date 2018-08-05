@@ -3,10 +3,14 @@ const httpProxy = require('http-proxy');
 const { getStreamURLPromise } = require('./stream');
 const { preCache } = require('./cache');
 const searchVideoReq = require('./youtube-api');
-
+const ytdl = require('ytdl-core');
 const app = express();
 
 var proxy = httpProxy.createProxyServer({
+});
+
+proxy.on('proxyRes', (proxyRes, req, res) => { 
+	console.log('status: ' + proxyRes.statusCode); 
 });
 
 const searchVideo = async ({ params }, res) => {
@@ -19,17 +23,10 @@ const searchVideo = async ({ params }, res) => {
 };
 
 const getAudioStream = async (req, res) => {
-	const { params, headers } = req;
-	console.log('hey');
-	if (headers.save) {
-		const streamURL = await getStreamURLPromise(params.videoId);
-
-		proxy.web(req, res, { target: streamURL, changeOrigin: true });
-	} else {
-		const streamURL = await getStreamURLPromise(params.videoId);
-
-		res.redirect(streamURL);
-	}
+	const { params } = req;
+	ytdl.getInfo(`http://www.youtube.com/watch?v=${params.videoId}`, {}, (err, inf) => {
+		res.redirect(inf.formats[inf.formats.length - 1].url);	
+	});
 };
 
 const searchAudioStream = async ({ params, headers }, res) => {
