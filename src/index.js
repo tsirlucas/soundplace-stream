@@ -1,11 +1,13 @@
 const express = require('express');
-
-const { createReadStream, getStreamURLPromise } = require('./stream');
+const httpProxy = require('http-proxy');
+const { getStreamURLPromise } = require('./stream');
 const { preCache } = require('./cache');
-const { createFullHead } = require('./util');
 const searchVideoReq = require('./youtube-api');
 
 const app = express();
+
+var proxy = httpProxy.createProxyServer({
+});
 
 const searchVideo = async ({ params }, res) => {
 	const videoId = await searchVideoReq(params.videoSearch);
@@ -16,13 +18,13 @@ const searchVideo = async ({ params }, res) => {
 	preCache(videoId);
 };
 
-const getAudioStream = async ({ params, headers }, res) => {
+const getAudioStream = async (req, res) => {
+	const { params, headers } = req;
+	console.log('hey');
 	if (headers.save) {
-		const { readStream, size } = await createReadStream(params.videoId);
-		const head = createFullHead(size, headers.data);
+		const streamURL = await getStreamURLPromise(params.videoId);
 
-		res.writeHead(200, head);
-		readStream.pipe(res)
+		proxy.web(req, res, { target: streamURL, changeOrigin: true });
 	} else {
 		const streamURL = await getStreamURLPromise(params.videoId);
 

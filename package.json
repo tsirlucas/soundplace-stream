@@ -11,8 +11,12 @@
   "dependencies": {
     "express": "^4.16.2",
     "googleapis": "^22.2.0",
+    "http-proxy": "^1.17.0",
     "node-cache": "^4.1.1",
     "query-string": "^5.0.0",
     "request-stream": "^1.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
   }
 }
